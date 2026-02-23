@@ -97,6 +97,7 @@ def search_searchspring(http: Session, query: str, proxies: dict, results_per_pa
         'q': query,
         'resultsPerPage': str(results_per_page),
         'page': str(page),
+        'resultsFormat': 'native',
     }
     try:
         resp = http.get(SEARCHSPRING_SEARCH_URL, params=params, proxies=proxies, timeout=30)
@@ -114,13 +115,23 @@ def search_searchspring(http: Session, query: str, proxies: dict, results_per_pa
 
     products = []
     for r in raw_results:
+        if not isinstance(r, dict):
+            continue
+
         url = r.get('url', '') or r.get('product_url', '')
         if url and not url.startswith('http'):
             url = f"{BASE_URL}{url}" if url.startswith('/') else f"{BASE_URL}/{url}"
 
         name = r.get('name', '') or r.get('title', '')
-        price_val = r.get('price', None) or r.get('sale_price', None)
-        price_text = f"${float(price_val):,.2f}" if price_val else None
+
+        price_val = None
+        raw_price = r.get('price', '') or r.get('sale_price', '')
+        if raw_price:
+            try:
+                price_val = float(raw_price)
+            except (ValueError, TypeError):
+                pass
+        price_text = f"${price_val:,.2f}" if price_val else None
 
         image = r.get('thumbnailImageUrl', '') or r.get('imageUrl', '') or r.get('image', '')
         if image and not image.startswith('http'):
@@ -132,24 +143,22 @@ def search_searchspring(http: Session, query: str, proxies: dict, results_per_pa
         if isinstance(description, list):
             description = description[0] if description else ''
         if description:
-            # Strip HTML tags from description
             description = BeautifulSoup(description, 'html.parser').get_text(strip=True)
             description = description[:MAX_DESCRIPTION_LENGTH]
 
         availability = 'In Stock'
-        stock = r.get('ss_in_stock', '') or r.get('in_stock', '') or r.get('availability', '')
-        if isinstance(stock, bool):
-            availability = 'In Stock' if stock else 'Out of Stock'
-        elif isinstance(stock, str) and stock:
-            if stock.lower() in ('0', 'false', 'no', 'out'):
-                availability = 'Out of Stock'
+        stock = r.get('instock', '') or r.get('ss_in_stock', '') or r.get('in_stock', '')
+        if isinstance(stock, str) and stock in ('0', 'false', 'no'):
+            availability = 'Out of Stock'
+        elif isinstance(stock, bool) and not stock:
+            availability = 'Out of Stock'
 
         if url and name:
             products.append({
                 'url': url,
                 'name': name,
                 'price': price_text,
-                'priceNumeric': float(price_val) if price_val else None,
+                'priceNumeric': price_val,
                 'image': image or None,
                 'sku': str(sku) if sku else None,
                 'description': description or None,
