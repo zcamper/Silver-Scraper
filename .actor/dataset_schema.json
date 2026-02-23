@@ -1,0 +1,59 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "url": {
+            "type": "string",
+            "title": "URL",
+            "description": "Product page URL",
+            "format": "uri"
+        },
+        "name": {
+            "type": "string",
+            "title": "Product Name",
+            "description": "Name of the product"
+        },
+        "price": {
+            "type": "string",
+            "title": "Price",
+            "description": "Price as displayed on the page (e.g. '$5,120.96')",
+            "nullable": true
+        },
+        "priceNumeric": {
+            "type": "number",
+            "title": "Price (Numeric)",
+            "description": "Price as a number for sorting and calculations",
+            "nullable": true
+        },
+        "imageUrl": {
+            "type": "string",
+            "title": "Image URL",
+            "description": "URL of the product image",
+            "format": "uri",
+            "nullable": true
+        },
+        "sku": {
+            "type": "string",
+            "title": "SKU",
+            "description": "Product ID / SKU",
+            "nullable": true
+        },
+        "availability": {
+            "type": "string",
+            "title": "Availability",
+            "description": "Stock status",
+            "enum": ["In Stock", "Out of Stock", "Pre-Order", "Sold Out", "Coming Soon", "Discontinued", "Unknown"]
+        },
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Product description (max 2000 chars)",
+            "nullable": true
+        },
+        "scrapedAt": {
+            "type": "string",
+            "title": "Scraped At",
+            "description": "ISO 8601 timestamp of when the product was scraped",
+            "format": "date-time"
+        }
+    }
+}

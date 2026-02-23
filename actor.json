@@ -1,0 +1,33 @@
+{
+    "actorSpecification": 1,
+    "name": "silver-com-scraper",
+    "title": "Silver.com Scraper",
+    "description": "Scrapes product details (name, price, SKU, availability, image) from Silver.com.",
+    "version": "1.0.0",
+    "dockerfile": "./Dockerfile",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "views": {
+                "products": {
+                    "title": "Products",
+                    "transformation": {
+                        "fields": ["name", "price", "priceNumeric", "imageUrl", "sku", "availability", "url", "scrapedAt"]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "name": { "label": "Product Name", "format": "text" },
+                            "price": { "label": "Price", "format": "text" },
+                            "priceNumeric": { "label": "Price ($)", "format": "number" },
+                            "imageUrl": { "label": "Image", "format": "link" },
+                            "sku": { "label": "SKU", "format": "text" },
+                            "availability": { "label": "Availability", "format": "text" },
+                            "url": { "label": "URL", "format": "link" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
